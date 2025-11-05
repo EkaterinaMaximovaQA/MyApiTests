@@ -15,14 +15,14 @@ class APIClient:
 
         self.base_url = self.get_base_url(environment)
         self.headers ={
-            "Content-Type": "aplication/json"
+            "Content-Type": "application/json"
         }
 
     def get_base_url(self,environment:Environment) -> str:
         if environment== Environment.TEST:
             return os.getenv("TEST_BASE_URL")
         elif environment == Environment.PROD:
-            return os.getenv("PROd_BASE_URL")
+            return os.getenv("PROD_BASE_URL")
         else:
             raise ValueError(f"Unsupported environment value:{environment}")
 
