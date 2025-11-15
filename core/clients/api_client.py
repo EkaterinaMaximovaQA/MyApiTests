@@ -73,7 +73,9 @@ class APIClient:
 
     def get_booking_by_id(self, booking_id: str):
         with allure.step(f"Get booking by ID {booking_id}"):
-            url = f"{self.base_url}/booking/{booking_id}"
+            url = f"{self.base_url}{BookingEndpoints.BOOKING}/{booking_id}"
             response = self.session.get(url)
             response.raise_for_status()
+        with allure.step("Assert status code"):
+            assert response.status_code == 200, f"Expected status 200, but {response.status_code}"
             return response.json()

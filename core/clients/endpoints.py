@@ -1,5 +1,7 @@
 
-class BookingEndpoints:
+from enum import Enum
+
+class BookingEndpoints(Enum):
     # Healthcheck
     PING = "/ping"
 
