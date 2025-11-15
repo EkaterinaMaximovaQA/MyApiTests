@@ -10,4 +10,4 @@ class BookingEndpoints(Enum):
 
     # Bookings
     BOOKING = "/booking"
-    BOOKING_BY_ID = "/booking/{booking_id}"
+
