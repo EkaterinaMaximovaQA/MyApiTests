@@ -7,6 +7,7 @@ import allure
 from  core.clients.endpoints import BookingEndpoints
 from core.settings.environments import Environment
 from core.settings.config import Credentials, Timeouts
+from requests.auth import HTTPBasicAuth
 
 
 load_dotenv()
@@ -79,3 +80,50 @@ class APIClient:
         with allure.step("Assert status code"):
             assert response.status_code == 200, f"Expected status 200, but {response.status_code}"
             return response.json()
+
+    def delete_booking(self, booking_id):  # Объявление метода delete_booking с параметром booking_id
+        with allure.step('Deleting booking'):  # Начало шага Allure с описанием "Удаление бронирования"
+            url = f"{self.base_url}/{BookingEndpoints.BOOKING}/{booking_id}"  # Формирование URL для удаления конкретного бронирования
+            response = self.session.delete(url, auth=HTTPBasicAuth(Credentials.USERNAME,Credentials.PASSWORD))  # Выполнение DELETE-запроса с базовой аутентификацией
+            response.raise_for_status()  # Проверка статуса ответа - выброс исключения при ошибке HTTP
+        with allure.step('Checking status code'):  # Начало шага Allure с описанием "Проверка статус кода"
+            assert response.status_code == 201, f"Expected status 201 but got {response.status_code}"  # Проверка что статус код равен 201
+            return response.status_code == 201  # Возврат результата проверки статус кода (True/False)
+
+    def create_booking(self, booking_data):  # Объявление метода create_booking с параметром booking_data
+        with allure.step('Creating booking'):  # Начало шага Allure с описанием "Создание бронирования"
+            url = f"{self.base_url}/{BookingEndpoints.BOOKING}"  # Формирование URL для создания бронирования
+            response = self.session.post(url,json=booking_data)  # Выполнение POST-запроса с данными бронирования в формате JSON
+            response.raise_for_status()  # Проверка статуса ответа - выброс исключения при ошибке HTTP
+        with allure.step('Checking status code'):  # Начало шага Allure с описанием "Проверка статус кода"
+            assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"  # Проверка что статус код равен 200
+            return response.json()  # Возврат данных ответа в формате JSON
+
+    def get_booking_ids(self, params=None):  # Объявление метода get_booking_ids с необязательным параметром params
+        with allure.step('Getting object with bookings'):  # Начало шага Allure с описанием "Получение объекта с бронированиями"
+            url = f"{self.base_url}/{BookingEndpoints.BOOKING}"  # Формирование URL для получения списка бронирований
+            response = self.session.get(url,params=params)  # Выполнение GET-запроса с возможными параметрами фильтрации
+            response.raise_for_status()  # Проверка статуса ответа - выброс исключения при ошибке HTTP
+        with allure.step('Checking status code'):  # Начало шага Allure с описанием "Проверка статус кода"
+            assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"  # Проверка что статус код равен 200
+            return response.json()  # Возврат данных ответа в формате JSON
+
+    def update_booking (self,booking_data,booking_id):
+        with allure.step('Updating booking'):
+            url = f"{self.base_url}/{BookingEndpoints.BOOKING}/{booking_id}"
+            response = self.session.put(url,json=booking_data)
+            response.raise_for_status()
+        with allure.step('Checking status code'):
+            assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"
+            return response.json()
+
+    def partial_update_booking (self,booking_id, partial_update_data):
+        with allure.step('Partial updating booking'):
+            url = f"{self.base_url}/{BookingEndpoints.BOOKING}/{booking_id}"
+            response = self.session.patch(url, json=partial_update_data)
+            response.raise_for_status()
+        with allure.step('Checking status code'):
+            assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"
+            return response.json()
+
+
