@@ -3,11 +3,24 @@ import pytest
 from datetime import datetime, timedelta
 from faker import Faker
 
-@pytest.fixture(scope="session")
-def api_client():
+#@pytest.fixture(scope="session")
+#def api_client():
+    #client = APIClient()
+    #client.auth()
+    #return client
+
+@pytest.fixture
+def api_client_no_auth():
+    """Клиент без авторизации - для публичных методов"""
+    return APIClient()
+
+@pytest.fixture
+def api_client_auth():
+    """Клиент с авторизацией - для защищённых методов"""
     client = APIClient()
     client.auth()
     return client
+
 
 @pytest.fixture
 def booking_dates():
