@@ -23,16 +23,18 @@ class APIClient:
         self.base_url = self.get_base_url(environment)
         self.session = requests.Session()
         self.session.headers ={
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
         }
 
-    def get_base_url(self,environment:Environment) -> str:
-        if environment== Environment.TEST:
+    def get_base_url(self, environment: Environment) -> str:
+        if environment == Environment.TEST:
             return os.getenv("TEST_BASE_URL")
         elif environment == Environment.PROD:
             return os.getenv("PROD_BASE_URL")
         else:
             raise ValueError(f"Unsupported environment value:{environment}")
+
 
     def get(self, endpoint, params=None, status_code=200):
         url = self.base_url + endpoint
@@ -94,8 +96,10 @@ class APIClient:
         with allure.step('Creating booking'):  # Начало шага Allure с описанием "Создание бронирования"
             url = f"{self.base_url}/{BookingEndpoints.BOOKING.value}"  # Формирование URL для создания бронирования
             response = self.session.post(url,json=booking_data)  # Выполнение POST-запроса с данными бронирования в формате JSON
-            #response.raise_for_status()
-        return response
+            response.raise_for_status()  # Проверка статуса ответа - выброс исключения при ошибке HTTP
+        with allure.step('Checking status code'):  # Начало шага Allure с описанием "Проверка статус кода"
+            assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"  # Проверка что статус код равен 200
+            return response.json()  # Возврат данных ответа в формате JSON
 
 
     def get_booking_ids(self, params=None):  # Объявление метода get_booking_ids с необязательным параметром params
