@@ -3,11 +3,12 @@ import pytest
 from datetime import datetime, timedelta
 from faker import Faker
 
-@pytest.fixture(scope="session")
-def api_client():
+@pytest.fixture
+def api_client_auth():
     client = APIClient()
     client.auth()
     return client
+
 
 @pytest.fixture
 def booking_dates():
