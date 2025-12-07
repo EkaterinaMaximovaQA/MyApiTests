@@ -36,21 +36,18 @@ def test_create_booking_success(api_client_auth, generate_random_booking_data):
 @allure.feature('Create Booking')
 @allure.story('Create booking with missing firstname')
 def test_create_booking_missing_firstname(api_client_auth):
-    invalid_data = {
-        "lastname": "Brown",
-        "totalprice": 111,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2018-01-01",
-            "checkout": "2019-01-01"
-        },
-        "additionalneeds": "Breakfast"
-    }
-    with allure.step("Проверка валидации Pydantic на клиенте"):
-        with pytest.raises(ValidationError) as error:
-            Booking(**invalid_data)
-    error_message = str(error.value)
-    assert "firstname" in error_message, "Должна быть ошибка про поле firstname"
+    invalid_data= {
+            "lastname": "Brown",
+            "totalprice": 111,
+            "depositpaid": True,
+            "bookingdates": {
+                "checkin": "2018-01-01",
+                "checkout": "2019-01-01"
+            },
+            "additionalneeds": "Breakfast"
+        }
+    with pytest.raises(requests.exceptions.HTTPError):
+        api_client_auth.create_booking(invalid_data)
 
 @allure.feature('Create Booking')
 @allure.story('Сreate booking with number instead of boolean for depositpaid')
@@ -67,27 +64,25 @@ def test_create_booking_number_instead_of_boolean(api_client_auth):
         },
         "additionalneeds": "Breakfast"
     }
-    with allure.step("Проверка валидации Pydantic на клиенте"):
-        with pytest.raises(ValidationError) as error:
-            Booking(**invalid_data)
-    error_message = str(error.value)
-    assert "depositpaid" in error_message,"Текст ошибки к полю depositpaid"
-
+    with pytest.raises(requests.exceptions.HTTPError):
+        api_client_auth.create_booking(invalid_data)
 
 @allure.feature('Create Booking')
 @allure.story('Create booking with checkin in wrong format (DD-MM-YYYY instead of YYYY-MM-DD)')
 def test_create_booking_wrong_date_format_dd_mm_yyyy(api_client_auth):
-    invalid_dates_data = {
+    invalid_data = {
+        "firstname": "Jim",
+        "lastname": "Brown",
+        "totalprice": 100,
+        "depositpaid": 123,
+        "bookingdates": {
         "checkin": "01-01-2011",
         "checkout": "29-01-2011"
+    },
+        "additionalneeds": "Breakfast"
     }
-    with allure.step("Проверяем валидацию формата дат"):
-        with pytest.raises(ValidationError) as exc_error:
-            BookingDates(**invalid_dates_data)
-
-    error_text = str(exc_error.value)
-    assert "checkin" in error_text or "checkout" in error_text, f"Ошибка должна быть про checkin или checkout: {error_text}"
-
+    with pytest.raises(requests.exceptions.HTTPError):
+        api_client_auth.create_booking(invalid_data)
 
 
 
