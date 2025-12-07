@@ -2,6 +2,11 @@ import  allure
 import  pytest
 import requests
 from faker import Faker
+from pydantic import ValidationError
+from core.models.booking import BookingResponse
+from core.models.booking import Booking
+from core.models.booking import BookingDates
+
 
 
 @allure.feature('Create Booking')
@@ -9,6 +14,10 @@ from faker import Faker
 def test_create_booking_success(api_client_auth, generate_random_booking_data):
     booking_data = generate_random_booking_data
     response_data = api_client_auth.create_booking(booking_data)
+    try:
+        BookingResponse(**response_data)
+    except ValidationError as error:
+        raise ValidationError (f"Response Validation failed,{error}")
     assert "bookingid" in response_data, "В ответе нет bookingid"
     assert "booking" in response_data, "В ответе нет booking"
     booking_in_response = response_data["booking"] #Проверяем что данные вернулись те же
@@ -22,6 +31,7 @@ def test_create_booking_success(api_client_auth, generate_random_booking_data):
     booking_id = response_data["bookingid"]
     assert isinstance(booking_id, int), "bookingid должен быть числом"
     assert booking_id > 0, "bookingid должен быть больше 0"
+
 
 @allure.feature('Create Booking')
 @allure.story('Create booking with missing firstname')
@@ -39,7 +49,6 @@ def test_create_booking_missing_firstname(api_client_auth):
     with pytest.raises(requests.exceptions.HTTPError):
         api_client_auth.create_booking(invalid_data)
 
-
 @allure.feature('Create Booking')
 @allure.story('Сreate booking with number instead of boolean for depositpaid')
 def test_create_booking_number_instead_of_boolean(api_client_auth):
@@ -47,9 +56,10 @@ def test_create_booking_number_instead_of_boolean(api_client_auth):
         "firstname": "Jim",
         "lastname": "Brown",
         "totalprice": 100,
-        "depositpaid": 1,
+        "depositpaid": 123,
         "bookingdates": {
             "checkin": "2018-01-01",
+            "checkout": "2019-01-01"
 
         },
         "additionalneeds": "Breakfast"
@@ -57,8 +67,22 @@ def test_create_booking_number_instead_of_boolean(api_client_auth):
     with pytest.raises(requests.exceptions.HTTPError):
         api_client_auth.create_booking(invalid_data)
 
-
-
+@allure.feature('Create Booking')
+@allure.story('Create booking with checkin in wrong format (DD-MM-YYYY instead of YYYY-MM-DD)')
+def test_create_booking_wrong_date_format_dd_mm_yyyy(api_client_auth):
+    invalid_data = {
+        "firstname": "Jim",
+        "lastname": "Brown",
+        "totalprice": 100,
+        "depositpaid": 123,
+        "bookingdates": {
+        "checkin": "01-01-2011",
+        "checkout": "29-01-2011"
+    },
+        "additionalneeds": "Breakfast"
+    }
+    with pytest.raises(requests.exceptions.HTTPError):
+        api_client_auth.create_booking(invalid_data)
 
 
 
