@@ -1,6 +1,7 @@
 import  allure
 import  pytest
 import requests
+
 from faker import Faker
 from pydantic import ValidationError
 from core.models.booking import BookingResponse
