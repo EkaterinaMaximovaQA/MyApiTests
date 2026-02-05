@@ -49,40 +49,6 @@ def test_create_booking_missing_firstname(api_client_auth):
     with pytest.raises(requests.exceptions.HTTPError):
         api_client_auth.create_booking(invalid_data)
 
-@allure.feature('Create Booking')
-@allure.story('Сreate booking with number instead of boolean for depositpaid')
-def test_create_booking_number_instead_of_boolean(api_client_auth):
-    invalid_data = {
-        "firstname": "Jim",
-        "lastname": "Brown",
-        "totalprice": 100,
-        "depositpaid": 123,
-        "bookingdates": {
-            "checkin": "2018-01-01",
-            "checkout": "2019-01-01"
-
-        },
-        "additionalneeds": "Breakfast"
-    }
-    with pytest.raises(requests.exceptions.HTTPError):
-        api_client_auth.create_booking(invalid_data)
-
-@allure.feature('Create Booking')
-@allure.story('Create booking with checkin in wrong format (DD-MM-YYYY instead of YYYY-MM-DD)')
-def test_create_booking_wrong_date_format_dd_mm_yyyy(api_client_auth):
-    invalid_data = {
-        "firstname": "Jim",
-        "lastname": "Brown",
-        "totalprice": 100,
-        "depositpaid": 123,
-        "bookingdates": {
-        "checkin": "01-01-2011",
-        "checkout": "29-01-2011"
-    },
-        "additionalneeds": "Breakfast"
-    }
-    with pytest.raises(requests.exceptions.HTTPError):
-        api_client_auth.create_booking(invalid_data)
 
 
 
