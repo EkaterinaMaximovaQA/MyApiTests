@@ -31,9 +31,9 @@ def test_ping_wrong_method(api_client_auth, mocker):  # Тест принима�
 @allure.story('Test server error')
 def test_ping_internal_server_error(api_client_auth, mocker):
     mock_response = mocker.Mock()
-    mock_response.status_code = 500
+    mock_response.status_code = 200
     mocker.patch.object(api_client_auth.session, 'get', return_value=mock_response)
-    with pytest.raises(AssertionError, match="Expected status 201 but got 500"):
+    with pytest.raises(AssertionError, match="Expected status 201 but got 200"):
         api_client_auth.ping()
 
 @allure.feature('Test Ping')

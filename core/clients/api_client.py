@@ -1,6 +1,4 @@
 from http.client import responses
-
-
 import requests
 import  os
 from dotenv import load_dotenv
@@ -58,7 +56,7 @@ class APIClient:
             response = self.session.get(url)
             response.raise_for_status()
         with allure.step("Assert status code"):
-            assert response.status_code == 201, f"Should be 201, but {response.status_code}, puPuPu..."
+            assert response.status_code == 201, f"Expected status 201 but got {response.status_code}"
             return response.status_code
 
     def auth(self):

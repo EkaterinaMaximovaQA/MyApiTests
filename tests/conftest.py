@@ -1,4 +1,3 @@
-
 from core.clients.api_client import APIClient
 import pytest
 from datetime import datetime, timedelta
